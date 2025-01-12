@@ -1,6 +1,12 @@
 package Logic
 
-import "wan-api-kol-event/DTO"
+import (
+	"net/http"
+	"wan-api-kol-event/DTO"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
 
 // * Get Kols from the database based on the range of pageIndex and pageSize
 // ! USE GORM TO QUERY THE DATABASE
@@ -9,7 +15,17 @@ import "wan-api-kol-event/DTO"
 // @params: pageIndex
 // @params: pageSize
 // @return: List of KOLs and error message
-func GetKolLogic() ([]*DTO.KolDTO, error) {
+func GetKolLogic(limit int64, page int64, db *gorm.DB, context *gin.Context) ([]*DTO.KolDTO, error) {
 
-	return nil, nil
+	var result []*DTO.KolDTO
+
+	db = db.Where("Active = true")
+	if err := db.Offset((int(page-1) * int(limit))).Limit(int(limit)).Find(&result).Error; err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return nil, err
+	}
+
+	return result, nil
 }

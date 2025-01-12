@@ -1,6 +1,7 @@
 package Initializers
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -17,6 +18,7 @@ func ConnectToDB() {
 
 	//Get database url from environment variables (defined in .env file)
 	var dsn string = os.Getenv("DB_URL")
+	fmt.Print(dsn)
 
 	//Connect with postgres
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
